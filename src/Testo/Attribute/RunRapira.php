@@ -18,7 +18,7 @@ use Testo\Pipeline\Attribute\Interceptable;
  * case, starting `rapira serve` before the case's tests and stopping it afterwards. All customization
  * lives on this attribute; every option has a sensible default.
  */
-#[Attribute(Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS)]
 #[FallbackInterceptor(RunRapiraInterceptor::class)]
 readonly class RunRapira implements Interceptable
 {
@@ -27,13 +27,17 @@ readonly class RunRapira implements Interceptable
      * @param non-empty-string $worker Entrypoint PHP script rapira runs (the worker file), passed as the
      * positional argument to `rapira serve`. Absolute, or relative to the application working directory.
      * @param non-empty-string $address Listen address, passed to rapira as `--listen`: `host:port`,
-     * `:port` (all interfaces), or `unix:<path>`. Also used to detect readiness.
-     * @param float $readyTimeout Seconds to wait for the server to accept connections before failing.
+     * `:port` (all interfaces), or `unix:<path>`. Also used to reach the server for the readiness probe.
+     * @param non-empty-string $healthPath Request path polled for readiness: the server is considered
+     * up once an HTTP GET here answers 2xx, so it must map to a route the app always serves (e.g. a
+     * hello-world endpoint).
+     * @param float $readyTimeout Seconds to wait for the server to answer before failing.
      */
     public function __construct(
         public Mode $mode = Mode::Worker,
         public string $worker = 'worker.php',
         public string $address = '127.0.0.1:8080',
+        public string $healthPath = '/',
         public float $readyTimeout = 5.0,
     ) {}
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rapira\Testing\Testo\Internal;
 
-use Override;
 use Rapira\Testing\Common\Runner;
 use Rapira\Testing\Testo\Attribute\RunRapira;
 use Rapira\Testing\Testo\RunRapiraPlugin;
@@ -39,7 +38,7 @@ final readonly class RunRapiraInterceptor implements TestCaseRunInterceptor
         private Messenger $messenger,
     ) {}
 
-    #[Override]
+    #[\Override]
     public function runTestCase(CaseInfo $info, callable $next): CaseResult
     {
         $runner = new Runner(
@@ -52,6 +51,7 @@ final readonly class RunRapiraInterceptor implements TestCaseRunInterceptor
             $this->config->mode,
             $this->config->worker,
             $this->config->address,
+            $this->config->healthPath,
             $this->config->readyTimeout,
         );
 
