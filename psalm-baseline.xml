@@ -4,12 +4,6 @@
     <MissingPureAnnotation>
       <code><![CDATA[__construct]]></code>
     </MissingPureAnnotation>
-    <PossiblyFalseArgument>
-      <code><![CDATA[$stderr]]></code>
-      <code><![CDATA[$stderr]]></code>
-      <code><![CDATA[$stdout]]></code>
-      <code><![CDATA[$stdout]]></code>
-    </PossiblyFalseArgument>
   </file>
   <file src="src/Common/Runner.php">
     <ArgumentTypeCoercion>
