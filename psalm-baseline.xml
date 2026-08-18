@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="7.0.0-beta19@7e751c06a756fa64dc4c759c09fe4a173afcb433">
+  <file src="src/Common/DLoader.php">
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+    </MissingPureAnnotation>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$stderr]]></code>
+      <code><![CDATA[$stderr]]></code>
+      <code><![CDATA[$stdout]]></code>
+      <code><![CDATA[$stdout]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Common/Runner.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$workerPath]]></code>
+    </ArgumentTypeCoercion>
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[isAbsolutePath]]></code>
+      <code><![CDATA[serveCommand]]></code>
+      <code><![CDATA[splitHostPort]]></code>
+    </MissingPureAnnotation>
+  </file>
+  <file src="src/Testo/Attribute/RunRapira.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[RunRapira]]></code>
+    </ClassMustBeFinal>
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+    </MissingPureAnnotation>
+  </file>
+  <file src="src/Testo/Internal/RapiraServer.php">
+    <MissingImmutableAnnotation>
+      <code><![CDATA[RapiraServer]]></code>
+    </MissingImmutableAnnotation>
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+    </MissingPureAnnotation>
+  </file>
+  <file src="src/Testo/Internal/RunRapiraInterceptor.php">
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+    </MissingPureAnnotation>
+  </file>
+  <file src="src/Testo/RunRapiraPlugin.php">
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+    </MissingPureAnnotation>
+  </file>
+</files>

@@ -1,0 +1,60 @@
+---
+
+name: 🧪 Unit testing
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - 1.x
+  push:
+    branches:
+      - 1.x
+
+jobs:
+  testing:
+    timeout-minutes: 4
+    runs-on: ${{ matrix.os }}
+    env:
+      COMPOSER_ROOT_VERSION: '1.x-dev'
+    concurrency:
+      cancel-in-progress: true
+      group: testing-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ matrix.php-version }}-${{ matrix.dependencies }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        php-version:
+          - '8.2'
+          - '8.3'
+          - '8.4'
+          - '8.5'
+        dependencies:
+          # - lowest
+          # - locked
+          - highest
+    steps:
+      - name: 📦 Check out the codebase
+        uses: actions/checkout@v6
+
+      - name: 🛠️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          ini-values: error_reporting=E_ALL
+
+      - name: 🤖 Validate composer.json and composer.lock
+        run: composer validate --ansi --strict
+
+      # Infection is dev-only and requires PHP >= 8.3, which breaks installation
+      # on the 8.2 matrix leg. It is not needed to run the test suite.
+      - name: 🧹 Remove Infection (incompatible with PHP 8.2)
+        run: composer remove --dev infection/infection --no-update --no-interaction
+
+      - name: 📥 Install dependencies with composer
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: 🧪 Run tests
+        run: composer test
