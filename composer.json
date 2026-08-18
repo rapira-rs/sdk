@@ -33,9 +33,10 @@
     "require-dev": {
         "buggregator/trap": "^1.16",
         "infection/infection": "^0.33.2",
+        "llm/skills": "^1.9",
         "spiral/code-style": "^2.3.1",
-        "testo/testo": "^0.10.42",
         "testo/bridge-infection": "^0.1.6",
+        "testo/testo": "^0.10.42",
         "vimeo/psalm": "^7"
     },
     "minimum-stability": "dev",
@@ -53,7 +54,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "infection/extension-installer": true
+            "infection/extension-installer": true,
+            "llm/skills": true
         }
     },
     "scripts": {
