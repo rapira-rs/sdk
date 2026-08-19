@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="7.0.0-beta19@7e751c06a756fa64dc4c759c09fe4a173afcb433">
+  <file src="src/Http/DispatcherRequestFactory.php">
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[createServerParams]]></code>
+      <code><![CDATA[headerLine]]></code>
+    </MissingPureAnnotation>
+    <MixedAssignment>
+      <code><![CDATA[$target[$key]]]></code>
+      <code><![CDATA[$target[$name]]]></code>
+      <code><![CDATA[$target[]]]></code>
+    </MixedAssignment>
+  </file>
+  <file src="src/Http/SapiRequestFactory.php">
+    <MissingPureAnnotation>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[normalizeHeaderName]]></code>
+    </MissingPureAnnotation>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[empty($_SERVER['HTTPS'])]]></code>
+      <code><![CDATA[empty($_SERVER['SERVER_PROTOCOL'])]]></code>
+    </RiskyTruthyFalsyComparison>
+  </file>
   <file src="src/Testing/Common/DLoader.php">
     <MissingPureAnnotation>
       <code><![CDATA[__construct]]></code>
