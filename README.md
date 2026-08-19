@@ -4,20 +4,16 @@
 
 </div>
 
-<div align="center">
-
-[![PHP](https://img.shields.io/packagist/php-v/rapira/testing.svg?style=flat-square&logo=php)](https://packagist.org/packages/rapira/testing)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rapira/testing.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/rapira/testing)
-[![License](https://img.shields.io/packagist/l/rapira/testing.svg?style=flat-square)](LICENSE.md)
-
-</div>
-
 <br />
 
-A [Testo](https://github.com/php-testo/testo) integration for testing PHP applications that run on
-[rapira](https://rapira.rs/). It provisions the `rapira` binary for a test suite and starts a live
-`rapira serve` process around annotated test cases, so tests can exercise the application over a real
-socket instead of mocking the server.
+A toolkit for testing PHP applications that run on [rapira](https://rapira.rs/). It provisions the
+`rapira` binary for a test suite and starts a live `rapira serve` process around your test cases, so
+tests can exercise the application over a real socket instead of mocking the server.
+
+The core is test-framework agnostic: the binary provisioning and server lifecycle live in a framework
+neutral layer, and each supported test framework gets a thin adapter on top of it.
+[Testo](https://github.com/php-testo/testo) is the only adapter shipped at the moment; support for other
+frameworks may follow.
 
 ## Installation
 
@@ -25,11 +21,16 @@ socket instead of mocking the server.
 composer require --dev rapira/testing
 ```
 
+[![PHP](https://img.shields.io/packagist/php-v/rapira/testing.svg?style=flat-square&logo=php)](https://packagist.org/packages/rapira/testing)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/rapira/testing.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/rapira/testing)
+[![License](https://img.shields.io/packagist/l/rapira/testing.svg?style=flat-square)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/rapira/testing.svg?style=flat-square)](https://packagist.org/packages/rapira/testing/stats)
+
 The `rapira` binary itself is downloaded on demand via [dload](https://github.com/php-internal/dload) the
 first time a suite that needs it runs. Your project must have a `dload.xml` describing where to fetch it
 from (see the `dload-fetch-tool` skill or the dload documentation for how to register a software alias).
 
-## Usage
+## Usage with Testo
 
 ### 1. Provision the binary for a suite
 
@@ -89,7 +90,3 @@ final class WorkerTest
 | `worker`        | `'worker.php'`        | Entrypoint script, absolute or relative to the working directory.  |
 | `address`       | `'127.0.0.1:8080'`    | Listen address (`host:port`, `:port`, or `unix:<path>`).            |
 | `readyTimeout`  | `5.0`                 | Seconds to wait for the server to accept connections.              |
-
-## License
-
-The BSD 3-Clause license. Please see [LICENSE.md](LICENSE.md) for more information.
