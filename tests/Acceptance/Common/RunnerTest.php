@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Tests\Acceptance;
+namespace Rapira\Testing\Tests\Acceptance\Common;
 
 use Internal\Path;
 use Rapira\Testing\Common\DLoader;
@@ -78,7 +78,7 @@ final class RunnerTest
             return $binary;
         }
 
-        $path = Path::create(\dirname(__DIR__, 2))->join('runtime', 'bin', 'rapira');
+        $path = Path::create(\dirname(__DIR__, 3))->join('runtime', 'bin', 'rapira');
         if (!$path->isFile()) {
             (new DLoader())->download($path->parent());
         }
@@ -97,7 +97,7 @@ final class RunnerTest
      */
     private static function appDirectory(): string
     {
-        return (string) Path::create(\dirname(__DIR__))->join('Fixtures', 'app');
+        return (string) Path::create(\dirname(__DIR__, 2))->join('Fixtures', 'app');
     }
 
     /**

@@ -1,30 +1,37 @@
 <div align="center">
 
-# Rapira Testing
+# Rapira SDK
 
 </div>
 
 <br />
 
-A toolkit for testing PHP applications that run on [rapira](https://rapira.rs/). It provisions the
-`rapira` binary for a test suite and starts a live `rapira serve` process around your test cases, so
-tests can exercise the application over a real socket instead of mocking the server.
+An SDK for building PHP applications and tooling on top of [rapira](https://rapira.rs/). It collects the
+shared building blocks that frameworks and their rapira bridges keep re-implementing — PSR-7 request
+factories, reusable wrappers and helpers, API clients, and testing utilities — under a single,
+framework-neutral package.
 
-The core is test-framework agnostic: the binary provisioning and server lifecycle live in a framework
-neutral layer, and each supported test framework gets a thin adapter on top of it.
-[Testo](https://github.com/php-testo/testo) is the only adapter shipped at the moment; support for other
-frameworks may follow.
+Everything lives under the `Rapira\Testing` namespace, organised by concern:
+
+- **`Common`** — framework-neutral core: binary provisioning (via [dload](https://github.com/php-internal/dload))
+  and the `rapira serve` process lifecycle.
+- **`Testo`** — a thin adapter that wires the core into the [Testo](https://github.com/php-testo/testo)
+  test framework. It is the only framework bridge shipped at the moment; support for others may follow.
+
+Its testing side provisions the `rapira` binary for a suite and starts a live `rapira serve` process
+around your test cases, so tests can exercise the application over a real socket instead of mocking the
+server.
 
 ## Installation
 
 ```bash
-composer require --dev rapira/testing
+composer require rapira/sdk
 ```
 
-[![PHP](https://img.shields.io/packagist/php-v/rapira/testing.svg?style=flat-square&logo=php)](https://packagist.org/packages/rapira/testing)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rapira/testing.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/rapira/testing)
-[![License](https://img.shields.io/packagist/l/rapira/testing.svg?style=flat-square)](LICENSE.md)
-[![Total Downloads](https://img.shields.io/packagist/dt/rapira/testing.svg?style=flat-square)](https://packagist.org/packages/rapira/testing/stats)
+[![PHP](https://img.shields.io/packagist/php-v/rapira/sdk.svg?style=flat-square&logo=php)](https://packagist.org/packages/rapira/sdk)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/rapira/sdk.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/rapira/sdk)
+[![License](https://img.shields.io/packagist/l/rapira/sdk.svg?style=flat-square)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/rapira/sdk.svg?style=flat-square)](https://packagist.org/packages/rapira/sdk/stats)
 
 The `rapira` binary itself is downloaded on demand via [dload](https://github.com/php-internal/dload) the
 first time a suite that needs it runs. Your project must have a `dload.xml` describing where to fetch it

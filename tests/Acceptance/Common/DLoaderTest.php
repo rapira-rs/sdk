@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Tests\Acceptance;
+namespace Rapira\Testing\Tests\Acceptance\Common;
 
 use Internal\Path;
 use Rapira\Testing\Common\DLoader;

@@ -1,20 +1,21 @@
 {
-    "name": "rapira/testing",
-    "description": "Testo integration for provisioning and running a rapira server during tests",
+    "name": "rapira/sdk",
+    "description": "SDK for building on rapira: shared building blocks, testing utilities, and framework bridges",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
         "rapira",
+        "sdk",
         "testo",
         "testing",
         "server",
         "worker",
         "plugin"
     ],
-    "homepage": "https://github.com/rapira-rs/testing",
+    "homepage": "https://github.com/rapira-rs/sdk",
     "authors": [
         {
-            "name": "Aleksei Gagarin (roxblnfk)",
+            "name": "Aleksei Gagarin",
             "homepage": "https://github.com/roxblnfk"
         }
     ],
@@ -34,6 +35,7 @@
         "buggregator/trap": "^1.16",
         "infection/infection": "^0.33.2",
         "llm/skills": "^1.9",
+        "rapira/sdk": "@dev",
         "spiral/code-style": "^2.3.1",
         "testo/bridge-infection": "^0.1.6",
         "testo/testo": "^0.10.42",
@@ -43,7 +45,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Rapira\\Testing\\": "src/"
+            "Rapira\\Testing\\": "src/Testing/"
         }
     },
     "autoload-dev": {
