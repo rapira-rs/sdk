@@ -5,7 +5,7 @@
        errorLevel="1"
        findUnusedBaselineEntry="false"
        findUnusedCode="false"
-       phpVersion="8.2"
+       phpVersion="8.4"
     errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>

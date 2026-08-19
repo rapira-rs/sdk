@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rapira\Sdk\Testing\Testo\Attribute;
 
-use Mode;
+use Rapira\Sdk\Common\Mode;
 use Rapira\Sdk\Testing\Testo\Internal\RunRapiraInterceptor;
 use Testo\Pipeline\Attribute\FallbackInterceptor;
 use Testo\Pipeline\Attribute\Interceptable;
