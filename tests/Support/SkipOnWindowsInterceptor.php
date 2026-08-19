@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Tests\Support;
+namespace Rapira\Sdk\Tests\Support;
 
 use Testo\Core\Context\TestInfo;
 use Testo\Core\Context\TestResult;

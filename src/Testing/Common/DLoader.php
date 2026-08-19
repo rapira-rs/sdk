@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Common;
+namespace Rapira\Sdk\Testing\Common;
 
 use Internal\DLoad\Bootstrap;
 use Internal\DLoad\DLoad;

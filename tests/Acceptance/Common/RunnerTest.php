@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Tests\Acceptance\Common;
+namespace Rapira\Sdk\Tests\Acceptance\Common;
 
 use Internal\Path;
-use Rapira\Testing\Common\DLoader;
-use Rapira\Testing\Common\Mode;
-use Rapira\Testing\Common\Runner;
-use Rapira\Testing\Tests\Support\SkipOnWindows;
+use Rapira\Sdk\Common\Mode;
+use Rapira\Sdk\Testing\Common\DLoader;
+use Rapira\Sdk\Testing\Common\Runner;
+use Rapira\Sdk\Tests\Support\SkipOnWindows;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Lifecycle\AfterTest;

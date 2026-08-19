@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Testo\Internal;
+namespace Rapira\Sdk\Testing\Testo\Internal;
 
-use Rapira\Testing\Common\Runner;
-use Rapira\Testing\Testo\Attribute\RunRapira;
-use Rapira\Testing\Testo\RunRapiraPlugin;
+use Rapira\Sdk\Testing\Common\Runner;
+use Rapira\Sdk\Testing\Testo\Attribute\RunRapira;
+use Rapira\Sdk\Testing\Testo\RunRapiraPlugin;
 use Testo\Common\Messenger;
 use Testo\Core\Context\CaseInfo;
 use Testo\Core\Context\CaseResult;

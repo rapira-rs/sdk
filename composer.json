@@ -35,7 +35,7 @@
         "buggregator/trap": "^1.16",
         "infection/infection": "^0.33.2",
         "llm/skills": "^1.9",
-        "rapira/sdk": "@dev",
+        "rapira/contract": "@dev",
         "spiral/code-style": "^2.3.1",
         "testo/bridge-infection": "^0.1.6",
         "testo/testo": "^0.10.42",
@@ -45,12 +45,12 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Rapira\\Testing\\": "src/Testing/"
+            "Rapira\\Sdk": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Rapira\\Testing\\Tests\\": "tests/"
+            "Rapira\\Sdk\\Tests\\": "tests/"
         }
     },
     "config": {

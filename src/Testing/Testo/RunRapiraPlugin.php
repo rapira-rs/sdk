@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Testo;
+namespace Rapira\Sdk\Testing\Testo;
 
 use Internal\Container\Container;
 use Internal\Path;
 use Psr\Log\LoggerInterface;
-use Rapira\Testing\Common\DLoader;
-use Rapira\Testing\Testo\Attribute\RunRapira;
-use Rapira\Testing\Testo\Internal\RapiraServer;
-use Rapira\Testing\Testo\Internal\RunRapiraInterceptor;
+use Rapira\Sdk\Testing\Common\DLoader;
+use Rapira\Sdk\Testing\Testo\Attribute\RunRapira;
+use Rapira\Sdk\Testing\Testo\Internal\RapiraServer;
+use Rapira\Sdk\Testing\Testo\Internal\RunRapiraInterceptor;
 use Testo\Application\Config\Plugin\SuitePlugins;
 use Testo\Common\EventListenerCollector;
 use Testo\Common\Messenger;

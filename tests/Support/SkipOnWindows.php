@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Tests\Support;
+namespace Rapira\Sdk\Tests\Support;
 
 use Testo\Pipeline\Attribute\FallbackInterceptor;
 use Testo\Pipeline\Attribute\Interceptable;

@@ -11,7 +11,7 @@ shared building blocks that frameworks and their rapira bridges keep re-implemen
 factories, reusable wrappers and helpers, API clients, and testing utilities — under a single,
 framework-neutral package.
 
-Everything lives under the `Rapira\Testing` namespace, organised by concern:
+Everything lives under the `Rapira\Sdk\Testing` namespace, organised by concern:
 
 - **`Common`** — framework-neutral core: binary provisioning (via [dload](https://github.com/php-internal/dload))
   and the `rapira serve` process lifecycle.
@@ -45,7 +45,7 @@ Attach `RunRapiraPlugin` to the suite in `testo.php`. It downloads the `rapira` 
 and binds the application directory the server will run from.
 
 ```php
-use Rapira\Testing\Testo\RunRapiraPlugin;
+use Rapira\Sdk\Testing\Testo\RunRapiraPlugin;
 use Testo\Application\Config\ApplicationConfig;
 use Testo\Application\Config\Plugin\SuitePlugins;
 use Testo\Application\Config\SuiteConfig;
@@ -72,8 +72,7 @@ Annotate a test case with `#[RunRapira]`. Testo starts `rapira serve` before the
 afterwards.
 
 ```php
-use Rapira\Testing\Common\Mode;
-use Rapira\Testing\Testo\Attribute\RunRapira;
+use Rapira\Sdk\Testing\Testo\Attribute\RunRapira;
 use Testo\Attribute\Test;
 
 #[RunRapira(mode: Mode::Worker, worker: 'worker.php', address: '127.0.0.1:8080')]

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Common;
+namespace Rapira\Sdk\Common;
 
-use Rapira\Testing\Testo\Attribute\RunRapira;
+use Rapira\Sdk\Testing\Testo\Attribute\RunRapira;
 
 /**
  * Rapira server run mode, selected via {@see RunRapira}.

@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Rapira\Testing\Testo\Attribute;
+namespace Rapira\Sdk\Testing\Testo\Attribute;
 
-use Attribute;
-use Rapira\Testing\Common\Mode;
-use Rapira\Testing\Testo\Internal\RunRapiraInterceptor;
+use Mode;
+use Rapira\Sdk\Testing\Testo\Internal\RunRapiraInterceptor;
 use Testo\Pipeline\Attribute\FallbackInterceptor;
 use Testo\Pipeline\Attribute\Interceptable;
 
