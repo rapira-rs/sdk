@@ -20,7 +20,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
-          UPSTREAM: https://github.com/rapira-rs/sdk
+          UPSTREAM: https://github.com/rapira-rs/sdk-php
         run: |
           gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body \
             "Thanks! This repository is a read-only split of the rapira SDK monorepo. Please open your pull request against ${UPSTREAM} instead — changes to this package live under \`packages/http\` there."

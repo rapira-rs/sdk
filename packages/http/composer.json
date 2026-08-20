@@ -9,7 +9,7 @@
         "http",
         "request-factory"
     ],
-    "homepage": "https://github.com/rapira-rs/http",
+    "homepage": "https://github.com/rapira-rs/http-php",
     "authors": [
         {
             "name": "Aleksei Gagarin",

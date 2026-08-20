@@ -10,7 +10,7 @@
         "server",
         "worker"
     ],
-    "homepage": "https://github.com/rapira-rs/testing",
+    "homepage": "https://github.com/rapira-rs/testing-php",
     "authors": [
         {
             "name": "Aleksei Gagarin",
