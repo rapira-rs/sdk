@@ -1,0 +1,69 @@
+---
+
+# Splits a package subtree into its dedicated mirror repository when
+# release-please tags a component release. Tag `<component>-X.Y.Z` maps to
+# `packages/<component>` → `rapira-rs/<component>-php`.
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    tags:
+      - 'http-[0-9]*'
+      - 'testing-[0-9]*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Component tag to split (e.g. http-0.1.1)'
+        required: true
+
+name: 📦 Split publish
+
+concurrency:
+  group: split-publish-${{ github.event.inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  split:
+    name: ↪ Subtree push
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵ Checkout monorepo (full history)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🧭 Resolve component / directory / version from tag
+        id: c
+        run: |
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          component="${tag%-*}"
+          version="${tag##*-}"
+
+          echo "tag=${tag}"                       >> "$GITHUB_OUTPUT"
+          echo "version=${version}"               >> "$GITHUB_OUTPUT"
+          echo "directory=packages/${component}"  >> "$GITHUB_OUTPUT"
+          echo "repository=${component}-php"      >> "$GITHUB_OUTPUT"
+
+      - name: 🌿 Resolve source branch for the tag
+        id: branch
+        run: |
+          branch=$(git branch --remotes --contains "${{ steps.c.outputs.tag }}" \
+                    | sed 's|origin/||' \
+                    | grep -v 'HEAD' \
+                    | head -n 1 \
+                    | tr -d ' ')
+          echo "name=${branch}" >> "$GITHUB_OUTPUT"
+
+      - name: 🚀 Push subtree to rapira-rs/${{ steps.c.outputs.repository }}
+        uses: symplify/monorepo-split-github-action@v2.3.0
+        with:
+          tag: ${{ steps.c.outputs.version }}
+          package_directory: ${{ steps.c.outputs.directory }}
+          repository_organization: rapira-rs
+          repository_name: ${{ steps.c.outputs.repository }}
+          branch: ${{ steps.branch.outputs.name }}
+          user_name: 'github-actions[bot]'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+...
