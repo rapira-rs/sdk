@@ -2,7 +2,7 @@
 
 # rapira/http
 
-**PSR-7 server-request factories for every rapira run mode**
+**PSR-7 server-request factories for every Rapira run mode**
 
 [![Support on Boosty](https://img.shields.io/static/v1?style=for-the-badge&label=&message=Sponsorship&logo=Boosty&logoColor=white&color=%23F15F2C)](https://boosty.to/roxblnfk)
 
@@ -19,9 +19,9 @@
 
 ## About
 
-Builds a PSR-7 `ServerRequestInterface` from the shape [rapira](https://rapira.rs/) hands your worker, with one factory per run mode:
+Builds a PSR-7 `ServerRequestInterface` from the shape [Rapira](https://rapira.rs/) hands your worker, with one factory per run mode:
 
-- **`SapiRequestFactory`** — hydrates the request from the PHP superglobals (`$_SERVER`, `$_GET`, `$_POST`, `$_FILES`), the shape rapira exposes in **classic** and **worker** modes.
+- **`SapiRequestFactory`** — hydrates the request from the PHP superglobals (`$_SERVER`, `$_GET`, `$_POST`, `$_FILES`), the shape Rapira exposes in **classic** and **worker** modes.
 - **`DispatcherRequestFactory`** — hydrates it from the [`Rapira\Http\Exchange`](https://github.com/rapira-rs/contract-php) the host delivers in **dispatcher** mode, without touching the superglobals.
 
 Both take PSR-17 factories, so you keep your project's own PSR-7 implementation.

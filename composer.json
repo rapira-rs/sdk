@@ -1,6 +1,6 @@
 {
     "name": "rapira/sdk-php",
-    "description": "Development monorepo for the rapira SDK; individual packages under packages/* are published separately",
+    "description": "Development monorepo for the Rapira SDK; individual packages under packages/* are published separately",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [

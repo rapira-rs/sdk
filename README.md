@@ -6,8 +6,8 @@
 
 <br />
 
-An SDK for building PHP applications and tooling on top of [rapira](https://rapira.rs/). It collects the
-shared building blocks that frameworks and their rapira bridges keep re-implementing — PSR-7 request
+An SDK for building PHP applications and tooling on top of [Rapira](https://rapira.rs/). It collects the
+shared building blocks that frameworks and their Rapira bridges keep re-implementing — PSR-7 request
 factories, reusable wrappers and helpers, API clients, and testing utilities.
 
 This repository is a **development monorepo**: it is not published itself. Each building block ships as
@@ -15,7 +15,7 @@ its own package under `packages/*`, split out to a dedicated repository and inst
 
 | Package | Namespace | What it provides |
 |---|---|---|
-| [`rapira/http`](packages/http) | `Rapira\Sdk\Http` | PSR-7 server-request factories for every rapira run mode (SAPI and dispatcher). |
+| [`rapira/http`](packages/http) | `Rapira\Sdk\Http` | PSR-7 server-request factories for every Rapira run mode (SAPI and dispatcher). |
 | [`rapira/testing`](packages/testing) | `Rapira\Sdk\Testing` | Provisions the `rapira` binary for a suite and runs a live `rapira serve` process around your test cases, so tests exercise the app over a real socket. Ships a [Testo](https://github.com/php-testo/testo) adapter. |
 
 ## Installation
