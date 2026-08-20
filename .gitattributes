@@ -1,5 +1,15 @@
 * text=auto
 
+# PHP-aware hunk headers in `git diff`.
+*.php diff=php
+
+# Version manifest: each package bumps its own line — take both sides on overlap
+# instead of raising a conflict. A trailing sentinel key ("_") keeps every real
+# entry comma-terminated so the union stays valid JSON.
+/.github/release-please/version.json merge=union
+
+# This root is the development monorepo and is not published, so export rules
+# below only matter to tooling that archives it.
 .github                export-ignore
 .*                     export-ignore
 *.dist                 export-ignore
@@ -10,7 +20,4 @@ composer-require-*     export-ignore
 Makefile               export-ignore
 Dockerfile             export-ignore
 infection.*            export-ignore
-tests                  export-ignore
-docs                   export-ignore
-resources              export-ignore
 CLAUDE.md              export-ignore

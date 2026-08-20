@@ -10,7 +10,6 @@ use HttpSoft\Message\UploadedFileFactory;
 use HttpSoft\Message\UriFactory;
 use Rapira\Sdk\Http\SapiRequestFactory;
 use Rapira\Sdk\Tests\Support\FailingFileStreamFactory;
-use RuntimeException;
 use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Data\DataProvider;
@@ -20,186 +19,17 @@ use Testo\Lifecycle\BeforeClass;
 use Testo\Lifecycle\BeforeTest;
 use Testo\Test;
 
-use function fopen;
-use function function_exists;
-
 #[Covers(SapiRequestFactory::class)]
 final class RequestFactoryTest
 {
     public static array|false $getAllHeadersResult = false;
-
     private array $globalServer = [];
     private array $globalPost = [];
     private array $globalFiles = [];
 
-    #[BeforeClass]
-    public static function setUpBeforeClass(): void
-    {
-        if (!function_exists('getallheaders')) {
-            eval(<<<'PHP_WRAP'
-            namespace {
-                function getallheaders(): array|false
-                {
-                    return \Rapira\Sdk\Tests\Unit\Http\RequestFactoryTest::getAllHeadersStubResult();
-                }
-            }
-            PHP_WRAP);
-        }
-    }
-
-    #[BeforeTest]
-    protected function setUp(): void
-    {
-        $this->globalServer = $_SERVER;
-        $this->globalPost = $_POST;
-        $this->globalFiles = $_FILES;
-        self::$getAllHeadersResult = false;
-    }
-
-    #[AfterTest]
-    protected function tearDown(): void
-    {
-        $_SERVER = $this->globalServer;
-        $_POST = $this->globalPost;
-        $_FILES = $this->globalFiles;
-    }
-
     public static function getAllHeadersStubResult(): array|false
     {
         return self::$getAllHeadersResult;
-    }
-
-    #[Test]
-    public function testUploadedFiles(): void
-    {
-        $_SERVER = [
-            'HTTP_HOST' => 'test',
-            'REQUEST_METHOD' => 'GET',
-        ];
-        $_FILES = [
-            'file1' => [
-                'name' => $firstFileName = 'facepalm.jpg',
-                'type' => 'image/jpeg',
-                'tmp_name' => self::fixture('image'),
-                'error' => '0',
-                'size' => '463',
-            ],
-            'file2' => [
-                'name' => [$secondFileName = 'facepalm2.jpg', $thirdFileName = 'facepalm3.jpg'],
-                'type' => ['image/jpeg', 'image/jpeg'],
-                'tmp_name' => [self::fixture('image2'), self::fixture('image3')],
-                'error' => ['0', '0'],
-                'size' => ['778', '1415'],
-            ],
-        ];
-
-        $serverRequest = $this->createRequestFactory()->create();
-
-        $firstUploadedFile = $serverRequest->getUploadedFiles()['file1'];
-        Assert::same($firstUploadedFile->getClientFilename(), $firstFileName);
-
-        $secondUploadedFile = $serverRequest->getUploadedFiles()['file2'][0];
-        Assert::same($secondUploadedFile->getClientFilename(), $secondFileName);
-
-        $thirdUploadedFile = $serverRequest->getUploadedFiles()['file2'][1];
-        Assert::same($thirdUploadedFile->getClientFilename(), $thirdFileName);
-    }
-
-    #[Test]
-    public function testUploadedFilesFallbackToEmptyStreamWhenTemporaryFileIsUnavailable(): void
-    {
-        $_SERVER = [
-            'HTTP_HOST' => 'test',
-            'REQUEST_METHOD' => 'GET',
-        ];
-        $_FILES = [
-            'file1' => [
-                'name' => 'facepalm.jpg',
-                'type' => 'image/jpeg',
-                'tmp_name' => '/non-existent-file',
-                'error' => '0',
-                'size' => '463',
-            ],
-        ];
-
-        $streamFactory = new FailingFileStreamFactory();
-
-        $requestFactory = new SapiRequestFactory(
-            new ServerRequestFactory(),
-            new UriFactory(),
-            new UploadedFileFactory(),
-            $streamFactory,
-        );
-
-        $serverRequest = $requestFactory->create();
-
-        $uploadedFile = $serverRequest->getUploadedFiles()['file1'];
-        Assert::same($uploadedFile->getClientFilename(), 'facepalm.jpg');
-        Assert::same($uploadedFile->getClientMediaType(), 'image/jpeg');
-        Assert::same($uploadedFile->getSize(), 463);
-        Assert::same($uploadedFile->getError(), 0);
-        Assert::same((string) $uploadedFile->getStream(), '');
-
-        Assert::same($streamFactory->createStreamFromFileCalls, ['/non-existent-file']);
-        Assert::same($streamFactory->createStreamCalls, ['']);
-    }
-
-    #[Test]
-    public function testHeadersParsing(): void
-    {
-        $_SERVER = [
-            'HTTP_HOST' => 'example.com',
-            'CONTENT_TYPE' => 'text/plain',
-            'REQUEST_METHOD' => 'GET',
-            'REDIRECT_STATUS' => '200',
-            'REDIRECT_HTTP_HOST' => 'example.org',
-            'REDIRECT_HTTP_CONNECTION' => 'keep-alive',
-        ];
-
-        $expected = [
-            'Host' => ['example.com'],
-            'Content-Type' => ['text/plain'],
-            'Connection' => ['keep-alive'],
-        ];
-
-        $request = $this->createRequestFactory()->create();
-
-        Assert::same($request->getHeaders(), $expected);
-    }
-
-    #[Test]
-    public function testHeadersParsingFallsBackWhenGetAllHeadersReturnsFalse(): void
-    {
-        self::$getAllHeadersResult = false;
-        $_SERVER = [
-            'HTTP_HOST' => 'example.com',
-            'CONTENT_TYPE' => 'text/plain',
-            'REQUEST_METHOD' => 'GET',
-        ];
-
-        $request = $this->createRequestFactory()->create();
-
-        Assert::same($request->getHeaders(), [
-            'Host' => ['example.com'],
-            'Content-Type' => ['text/plain'],
-        ]);
-    }
-
-    #[Test]
-    public function testHeadersAreTakenFromGetAllHeadersWhenAvailable(): void
-    {
-        self::$getAllHeadersResult = [
-            'X-Test' => 'header-value',
-            'X-Another' => 'another-value',
-        ];
-        $_SERVER = [
-            'REQUEST_METHOD' => 'GET',
-        ];
-
-        $request = $this->createRequestFactory()->create();
-
-        Assert::same($request->getHeader('X-Test'), ['header-value']);
-        Assert::same($request->getHeader('X-Another'), ['another-value']);
     }
 
     public static function ipv6AuthorityDataProvider(): array
@@ -216,49 +46,12 @@ final class RequestFactoryTest
         ];
     }
 
-    #[DataProvider('ipv6AuthorityDataProvider')]
-    #[Test]
-    public function testIpv6HostIsFormattedAsUriAuthority(string $hostHeader, string $expectedUri): void
-    {
-        $_SERVER = [
-            'HTTP_HOST' => $hostHeader,
-            'REQUEST_METHOD' => 'GET',
-        ];
-
-        $request = $this->createRequestFactory()->create();
-
-        Assert::same((string) $request->getUri(), $expectedUri);
-    }
-
-    #[Test]
-    public function testInvalidMethodException(): void
-    {
-        $_SERVER = [];
-
-        $requestFactory = $this->createRequestFactory();
-
-        Expect::exception(RuntimeException::class)->withMessage('Unable to determine HTTP request method.');
-        $requestFactory->create();
-    }
-
     public static function bodyDataProvider(): array
     {
         return [
             'string' => ['content', 'content'],
             'null' => ['', null],
         ];
-    }
-
-    #[DataProvider('bodyDataProvider')]
-    #[Test]
-    public function testBody(string $expected, ?string $body): void
-    {
-        $_SERVER = ['REQUEST_METHOD' => 'GET'];
-
-        $requestFactory = $this->createRequestFactory();
-        $request = $requestFactory->create($this->createResource($body));
-
-        Assert::same((string) $request->getBody(), $expected);
     }
 
     public static function hostParsingDataProvider(): array
@@ -506,6 +299,190 @@ final class RequestFactoryTest
         ];
     }
 
+    public static function dataPostInParsedBody(): array
+    {
+        return [
+            [
+                ['name' => 'test'],
+                'application/x-www-form-urlencoded',
+            ],
+            [
+                ['name' => 'test'],
+                'multipart/form-data',
+            ],
+        ];
+    }
+
+    #[Test]
+    public function testUploadedFiles(): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => 'test',
+            'REQUEST_METHOD' => 'GET',
+        ];
+        $_FILES = [
+            'file1' => [
+                'name' => $firstFileName = 'facepalm.jpg',
+                'type' => 'image/jpeg',
+                'tmp_name' => self::fixture('image'),
+                'error' => '0',
+                'size' => '463',
+            ],
+            'file2' => [
+                'name' => [$secondFileName = 'facepalm2.jpg', $thirdFileName = 'facepalm3.jpg'],
+                'type' => ['image/jpeg', 'image/jpeg'],
+                'tmp_name' => [self::fixture('image2'), self::fixture('image3')],
+                'error' => ['0', '0'],
+                'size' => ['778', '1415'],
+            ],
+        ];
+
+        $serverRequest = $this->createRequestFactory()->create();
+
+        $firstUploadedFile = $serverRequest->getUploadedFiles()['file1'];
+        Assert::same($firstUploadedFile->getClientFilename(), $firstFileName);
+
+        $secondUploadedFile = $serverRequest->getUploadedFiles()['file2'][0];
+        Assert::same($secondUploadedFile->getClientFilename(), $secondFileName);
+
+        $thirdUploadedFile = $serverRequest->getUploadedFiles()['file2'][1];
+        Assert::same($thirdUploadedFile->getClientFilename(), $thirdFileName);
+    }
+
+    #[Test]
+    public function testUploadedFilesFallbackToEmptyStreamWhenTemporaryFileIsUnavailable(): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => 'test',
+            'REQUEST_METHOD' => 'GET',
+        ];
+        $_FILES = [
+            'file1' => [
+                'name' => 'facepalm.jpg',
+                'type' => 'image/jpeg',
+                'tmp_name' => '/non-existent-file',
+                'error' => '0',
+                'size' => '463',
+            ],
+        ];
+
+        $streamFactory = new FailingFileStreamFactory();
+
+        $requestFactory = new SapiRequestFactory(
+            new ServerRequestFactory(),
+            new UriFactory(),
+            new UploadedFileFactory(),
+            $streamFactory,
+        );
+
+        $serverRequest = $requestFactory->create();
+
+        $uploadedFile = $serverRequest->getUploadedFiles()['file1'];
+        Assert::same($uploadedFile->getClientFilename(), 'facepalm.jpg');
+        Assert::same($uploadedFile->getClientMediaType(), 'image/jpeg');
+        Assert::same($uploadedFile->getSize(), 463);
+        Assert::same($uploadedFile->getError(), 0);
+        Assert::same((string) $uploadedFile->getStream(), '');
+
+        Assert::same($streamFactory->createStreamFromFileCalls, ['/non-existent-file']);
+        Assert::same($streamFactory->createStreamCalls, ['']);
+    }
+
+    #[Test]
+    public function testHeadersParsing(): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => 'example.com',
+            'CONTENT_TYPE' => 'text/plain',
+            'REQUEST_METHOD' => 'GET',
+            'REDIRECT_STATUS' => '200',
+            'REDIRECT_HTTP_HOST' => 'example.org',
+            'REDIRECT_HTTP_CONNECTION' => 'keep-alive',
+        ];
+
+        $expected = [
+            'Host' => ['example.com'],
+            'Content-Type' => ['text/plain'],
+            'Connection' => ['keep-alive'],
+        ];
+
+        $request = $this->createRequestFactory()->create();
+
+        Assert::same($request->getHeaders(), $expected);
+    }
+
+    #[Test]
+    public function testHeadersParsingFallsBackWhenGetAllHeadersReturnsFalse(): void
+    {
+        self::$getAllHeadersResult = false;
+        $_SERVER = [
+            'HTTP_HOST' => 'example.com',
+            'CONTENT_TYPE' => 'text/plain',
+            'REQUEST_METHOD' => 'GET',
+        ];
+
+        $request = $this->createRequestFactory()->create();
+
+        Assert::same($request->getHeaders(), [
+            'Host' => ['example.com'],
+            'Content-Type' => ['text/plain'],
+        ]);
+    }
+
+    #[Test]
+    public function testHeadersAreTakenFromGetAllHeadersWhenAvailable(): void
+    {
+        self::$getAllHeadersResult = [
+            'X-Test' => 'header-value',
+            'X-Another' => 'another-value',
+        ];
+        $_SERVER = [
+            'REQUEST_METHOD' => 'GET',
+        ];
+
+        $request = $this->createRequestFactory()->create();
+
+        Assert::same($request->getHeader('X-Test'), ['header-value']);
+        Assert::same($request->getHeader('X-Another'), ['another-value']);
+    }
+
+    #[DataProvider('ipv6AuthorityDataProvider')]
+    #[Test]
+    public function testIpv6HostIsFormattedAsUriAuthority(string $hostHeader, string $expectedUri): void
+    {
+        $_SERVER = [
+            'HTTP_HOST' => $hostHeader,
+            'REQUEST_METHOD' => 'GET',
+        ];
+
+        $request = $this->createRequestFactory()->create();
+
+        Assert::same((string) $request->getUri(), $expectedUri);
+    }
+
+    #[Test]
+    public function testInvalidMethodException(): void
+    {
+        $_SERVER = [];
+
+        $requestFactory = $this->createRequestFactory();
+
+        Expect::exception(\RuntimeException::class)->withMessage('Unable to determine HTTP request method.');
+        $requestFactory->create();
+    }
+
+    #[DataProvider('bodyDataProvider')]
+    #[Test]
+    public function testBody(string $expected, ?string $body): void
+    {
+        $_SERVER = ['REQUEST_METHOD' => 'GET'];
+
+        $requestFactory = $this->createRequestFactory();
+        $request = $requestFactory->create($this->createResource($body));
+
+        Assert::same((string) $request->getBody(), $expected);
+    }
+
     #[DataProvider('hostParsingDataProvider')]
     #[Test]
     public function testHostParsingFromParameters(array $serverParams, array $expectParams): void
@@ -538,20 +515,6 @@ final class RequestFactoryTest
         Assert::same($request->getUri()->getScheme(), $expectParams['scheme']);
         Assert::same($request->getUri()->getPath(), $expectParams['path']);
         Assert::same($request->getUri()->getQuery(), $expectParams['query']);
-    }
-
-    public static function dataPostInParsedBody(): array
-    {
-        return [
-            [
-                ['name' => 'test'],
-                'application/x-www-form-urlencoded',
-            ],
-            [
-                ['name' => 'test'],
-                'multipart/form-data',
-            ],
-        ];
     }
 
     #[DataProvider('dataPostInParsedBody')]
@@ -640,6 +603,38 @@ final class RequestFactoryTest
         Assert::null($request->getUri()->getPort());
     }
 
+    #[BeforeClass]
+    public static function setUpBeforeClass(): void
+    {
+        if (!\function_exists('getallheaders')) {
+            eval(<<<'PHP_WRAP'
+            namespace {
+                function getallheaders(): array|false
+                {
+                    return \Rapira\Sdk\Tests\Unit\Http\RequestFactoryTest::getAllHeadersStubResult();
+                }
+            }
+            PHP_WRAP);
+        }
+    }
+
+    #[BeforeTest]
+    protected function setUp(): void
+    {
+        $this->globalServer = $_SERVER;
+        $this->globalPost = $_POST;
+        $this->globalFiles = $_FILES;
+        self::$getAllHeadersResult = false;
+    }
+
+    #[AfterTest]
+    protected function tearDown(): void
+    {
+        $_SERVER = $this->globalServer;
+        $_POST = $this->globalPost;
+        $_FILES = $this->globalFiles;
+    }
+
     /**
      * Absolute path to an uploaded-file fixture under `tests/Fixtures/uploads`.
      */
@@ -665,6 +660,6 @@ final class RequestFactoryTest
     {
         return $value === null
             ? false
-            : fopen('data://text/plain,' . $value, 'rb');
+            : \fopen('data://text/plain,' . $value, 'rb');
     }
 }

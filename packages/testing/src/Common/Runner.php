@@ -293,7 +293,7 @@ final class Runner
     {
         $pos = \strrpos($address, ':');
         $host = $pos === false ? $address : \substr($address, 0, $pos);
-        $port = $pos === false ? 0 : (int)\substr($address, $pos + 1);
+        $port = $pos === false ? 0 : (int) \substr($address, $pos + 1);
 
         return [$host === '' ? '127.0.0.1' : $host, $port];
     }
@@ -343,9 +343,9 @@ final class Runner
     private function isAbsolutePath(string $path): bool
     {
         return $path !== '' && (
-                $path[0] === '/'
+            $path[0] === '/'
                 || $path[0] === '\\'
                 || (\strlen($path) > 2 && \ctype_alpha($path[0]) && $path[1] === ':')
-            );
+        );
     }
 }

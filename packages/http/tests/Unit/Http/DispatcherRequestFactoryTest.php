@@ -22,9 +22,6 @@ use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Test;
 
-use const UPLOAD_ERR_NO_FILE;
-use const UPLOAD_ERR_OK;
-
 #[Covers(DispatcherRequestFactory::class)]
 final class DispatcherRequestFactoryTest
 {
@@ -201,7 +198,7 @@ final class DispatcherRequestFactoryTest
         Assert::same($avatar->getClientFilename(), 'face.jpg');
         Assert::same($avatar->getClientMediaType(), 'image/jpeg');
         Assert::same($avatar->getSize(), 463);
-        Assert::same($avatar->getError(), UPLOAD_ERR_OK);
+        Assert::same($avatar->getError(), \UPLOAD_ERR_OK);
 
         // A multipart body is parsed away, so the message body itself is empty.
         Assert::same((string) $request->getBody(), '');
@@ -237,7 +234,7 @@ final class DispatcherRequestFactoryTest
 
         $request = $this->create(self::request(method: 'POST', body: $multipart));
 
-        Assert::same($request->getUploadedFiles()['optional']->getError(), UPLOAD_ERR_NO_FILE);
+        Assert::same($request->getUploadedFiles()['optional']->getError(), \UPLOAD_ERR_NO_FILE);
     }
 
     #[Test]
@@ -259,20 +256,6 @@ final class DispatcherRequestFactoryTest
         Assert::same($avatar->getClientFilename(), 'face.jpg');
         Assert::same((string) $avatar->getStream(), '');
         Assert::same($streamFactory->createStreamFromFileCalls, ['/non-existent-file']);
-    }
-
-    private function create(Request $request): \Psr\Http\Message\ServerRequestInterface
-    {
-        return $this->factory(new StreamFactory())->create(new StubExchange($request));
-    }
-
-    private function factory(StreamFactoryInterface $streamFactory): DispatcherRequestFactory
-    {
-        return new DispatcherRequestFactory(
-            new ServerRequestFactory(),
-            new UploadedFileFactory(),
-            $streamFactory,
-        );
     }
 
     /**
@@ -316,5 +299,19 @@ final class DispatcherRequestFactoryTest
     private static function fixture(string $name): string
     {
         return \dirname(__DIR__, 2) . '/Fixtures/uploads/' . $name;
+    }
+
+    private function create(Request $request): \Psr\Http\Message\ServerRequestInterface
+    {
+        return $this->factory(new StreamFactory())->create(new StubExchange($request));
+    }
+
+    private function factory(StreamFactoryInterface $streamFactory): DispatcherRequestFactory
+    {
+        return new DispatcherRequestFactory(
+            new ServerRequestFactory(),
+            new UploadedFileFactory(),
+            $streamFactory,
+        );
     }
 }

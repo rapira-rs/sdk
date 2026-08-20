@@ -1,13 +1,22 @@
 ---
 
 # https://github.com/googleapis/release-please/blob/main/docs/customizing.md
+# https://github.com/googleapis/release-please-action
 
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - 1.x
+  # Manual re-trigger, mirroring release-please's own post-merge run.
+  workflow_dispatch:
 
 name: 📦 Create release
+
+# Serialize release runs so a release-creation run is never interrupted or raced
+# by another (e.g. a feature PR merged right before the release PR).
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -19,10 +28,56 @@ jobs:
     steps:
       - name: 🎉 Create release
         uses: googleapis/release-please-action@v4
+        id: release
         with:
+          # The built-in GITHUB_TOKEN makes release-please open the PR as
+          # github-actions[bot]. NOTE: events produced with this token (the PR
+          # and its commits) do NOT trigger other workflows, so CI checks won't
+          # run on the release PR itself. Swap this for a PAT / GitHub App token
+          # if you need the release PR to run the full CI cycle.
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .github/.release-please-config.json
-          manifest-file: resources/version.json
+          manifest-file: .github/release-please/version.json
           target-branch: 1.x
+
+      # Mirror the just-released versions into every rapira/* constraint of the
+      # release PR. Re-applied on every run, so it survives release-please
+      # regenerating (force-pushing) the PR branch.
+      - name: ⬇️ Checkout release PR branch
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: 🐘 Setup PHP
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          coverage: none
+
+      - name: 🔗 Sync intra-package version constraints
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        run: |
+          # Provide the base-branch manifest so the sync only refreshes packages
+          # actually released this cycle.
+          git fetch origin 1.x
+          git show FETCH_HEAD:.github/release-please/version.json > "${RUNNER_TEMP}/prev-version.json" \
+            || cp .github/release-please/version.json "${RUNNER_TEMP}/prev-version.json"
+          php .github/release-please/sync-deps.php "${RUNNER_TEMP}/prev-version.json"
+
+      - name: 📌 Commit synced constraints
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        run: |
+          if git diff --quiet; then
+            echo "Nothing to commit (constraints unchanged)."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(release): sync version constraints"
+          git push
 
 ...

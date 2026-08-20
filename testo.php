@@ -3,28 +3,17 @@
 declare(strict_types=1);
 
 use Testo\Application\Config\ApplicationConfig;
-use Testo\Application\Config\SuiteConfig;
+use Testo\Application\Config\FinderConfig;
 
 return new ApplicationConfig(
-    // For Codecov.
-    src: ['src'],
-    suites: [
-        new SuiteConfig(
-            name: 'Unit',
-            location: ['tests/Unit'],
-        ),
-
-        // End-to-end tests that hit the network (real GitHub downloads). Run deliberately, not as part
-        // of the fast unit run.
-        new SuiteConfig(
-            name: 'Acceptance',
-            location: ['tests/Acceptance'],
-        ),
-
-        // For inline tests and benchmarks right in the project source code, in the src folder.
-        new SuiteConfig(
-            name: 'Sources',
-            location: ['src'],
-        ),
-    ],
+    // Source roots for coverage, one per package.
+    src: new FinderConfig([
+        'packages/http/src',
+        'packages/testing/src',
+    ]),
+    // Each package contributes its own suites; the root run aggregates them.
+    suites: \array_merge(
+        require __DIR__ . '/packages/http/tests/suites.php',
+        require __DIR__ . '/packages/testing/tests/suites.php',
+    ),
 );

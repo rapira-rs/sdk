@@ -140,7 +140,7 @@ final readonly class SapiRequestFactory
     {
         /** @psalm-var array<string, string> $_SERVER */
 
-        if (\function_exists('getallheaders') && ($headers = \getallheaders()) !== false) {
+        if (\function_exists('getallheaders') && ($headers = getallheaders()) !== false) {
             /** @psalm-var array<string, string> $headers */
             return $headers;
         }

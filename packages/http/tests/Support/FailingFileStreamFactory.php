@@ -7,7 +7,6 @@ namespace Rapira\Sdk\Tests\Support;
 use HttpSoft\Message\StreamFactory;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 /**
  * A {@see StreamFactoryInterface} whose file-based creation always fails, used to exercise the
@@ -35,7 +34,7 @@ final class FailingFileStreamFactory implements StreamFactoryInterface
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
         $this->createStreamFromFileCalls[] = $filename;
-        throw new RuntimeException('Temporary file is unavailable.');
+        throw new \RuntimeException('Temporary file is unavailable.');
     }
 
     public function createStreamFromResource($resource): StreamInterface

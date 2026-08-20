@@ -9,10 +9,11 @@
     errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>
-        <directory name="src"/>
+        <directory name="packages/http/src"/>
+        <directory name="packages/testing/src"/>
         <ignoreFiles>
             <directory name="vendor"/>
-            <directory name="tests"/>
+            <directory name="packages/*/tests"/>
         </ignoreFiles>
     </projectFiles>
     <forbiddenFunctions>
