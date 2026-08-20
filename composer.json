@@ -27,8 +27,8 @@
     ],
     "require": {
         "php": ">=8.4",
-        "rapira/http": "^0.1.1",
-        "rapira/testing": "^0.1.1"
+        "rapira/http": "^0.1.2",
+        "rapira/testing": "^0.1.2"
     },
     "require-dev": {
         "buggregator/trap": "^1.16",
