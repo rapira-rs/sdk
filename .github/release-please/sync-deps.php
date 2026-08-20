@@ -56,8 +56,9 @@ const SECTIONS = ['require', 'require-dev'];
 /**
  * Trailing sentinel key in the manifest. It carries no package: its only job is
  * to keep every real entry comma-terminated so a `merge=union` of concurrent
- * per-package version bumps (see .gitattributes) stays valid JSON. Skipped
- * everywhere a manifest key is treated as a package path.
+ * per-package version bumps (see .gitattributes) stays valid JSON. Its value is
+ * an inert but parseable version ("0.0.0") — release-please chokes on an empty
+ * version string. Skipped everywhere a manifest key is treated as a package path.
  */
 const SENTINEL = '_';
 

@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🎉 Create release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         id: release
         with:
           # The built-in GITHUB_TOKEN makes release-please open the PR as
@@ -36,7 +36,7 @@ jobs:
           # run on the release PR itself. Swap this for a PAT / GitHub App token
           # if you need the release PR to run the full CI cycle.
           token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: .github/.release-please-config.json
+          config-file: .github/release-please/config.json
           manifest-file: .github/release-please/version.json
           target-branch: 1.x
 

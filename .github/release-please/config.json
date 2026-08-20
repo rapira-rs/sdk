@@ -3,6 +3,7 @@
     "release-type": "php",
     "separate-pull-requests": false,
     "pull-request-title-pattern": "chore: release ${branch}",
+    "last-release-sha": "554c541530131de2715638a21094f1474ae89dd7",
     "packages": {
         "packages/http": {
             "package-name": "rapira/http",
