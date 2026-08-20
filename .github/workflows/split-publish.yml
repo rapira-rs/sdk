@@ -1,66 +1,109 @@
 ---
 
-# Splits a package subtree into its dedicated mirror repository when
-# release-please tags a component release. Tag `<component>-X.Y.Z` maps to
-# `packages/<component>` → `rapira-rs/<component>-php`.
+# Mirrors each released package subtree into its dedicated repository. Fires when
+# release-please's merged release PR bumps the version manifest on 1.x — a real
+# push (human/auto merge), so it triggers even though release-please itself runs
+# under GITHUB_TOKEN. Versions are read from the manifest, so no component tags
+# are needed here. Key `packages/<component>` → repo `rapira-rs/<component>-php`.
 
 on:  # yamllint disable-line rule:truthy
   push:
-    tags:
-      - 'http-[0-9]*'
-      - 'testing-[0-9]*'
+    branches:
+      - 1.x
+    paths:
+      - '.github/release-please/version.json'
+  # Manual re-split at the manifest's current versions. Empty component = all.
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Component tag to split (e.g. http-0.1.1)'
-        required: true
+      component:
+        description: 'Single component to re-split (e.g. http); empty = all'
+        required: false
+        default: ''
 
 name: 📦 Split publish
 
 concurrency:
-  group: split-publish-${{ github.event.inputs.tag || github.ref }}
+  group: split-publish-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  split:
-    name: ↪ Subtree push
+  plan:
+    name: 🧭 Plan released packages
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has: ${{ steps.plan.outputs.has }}
     steps:
       - name: ⤵ Checkout monorepo (full history)
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: 🧭 Resolve component / directory / version from tag
-        id: c
+      - name: 🧮 Diff the version manifest into a split matrix
+        id: plan
+        env:
+          MANIFEST: .github/release-please/version.json
+          BEFORE: ${{ github.event.before }}
+          DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          COMPONENT: ${{ github.event.inputs.component }}
         run: |
-          tag="${{ github.event.inputs.tag || github.ref_name }}"
-          component="${tag%-*}"
-          version="${tag##*-}"
+          set -euo pipefail
 
-          echo "tag=${tag}"                       >> "$GITHUB_OUTPUT"
-          echo "version=${version}"               >> "$GITHUB_OUTPUT"
-          echo "directory=packages/${component}"  >> "$GITHUB_OUTPUT"
-          echo "repository=${component}-php"      >> "$GITHUB_OUTPUT"
+          # On a push, compare against the pre-push manifest so only packages
+          # whose version actually changed are split. On workflow_dispatch there
+          # is no baseline — treat everything as changed (optionally filtered).
+          if [ "${DISPATCH}" = "true" ] || [ -z "${BEFORE}" ] \
+             || ! git cat-file -e "${BEFORE}:${MANIFEST}" 2>/dev/null; then
+            echo '{}' > prev.json
+          else
+            git show "${BEFORE}:${MANIFEST}" > prev.json
+          fi
 
-      - name: 🌿 Resolve source branch for the tag
-        id: branch
-        run: |
-          branch=$(git branch --remotes --contains "${{ steps.c.outputs.tag }}" \
-                    | sed 's|origin/||' \
-                    | grep -v 'HEAD' \
-                    | head -n 1 \
-                    | tr -d ' ')
-          echo "name=${branch}" >> "$GITHUB_OUTPUT"
+          matrix=$(jq -c -n \
+            --slurpfile cur "${MANIFEST}" \
+            --slurpfile prev prev.json \
+            --arg dispatch "${DISPATCH}" \
+            --arg comp "${COMPONENT}" '
+              ($cur[0]) as $c | ($prev[0] // {}) as $p |
+              [ $c | to_entries[]
+                | select(.key != "_")
+                | .key as $path
+                | (.key | ltrimstr("packages/")) as $component
+                | .value as $ver
+                | select(($dispatch == "true") or ($p[$path] != $ver))
+                | select(($comp == "") or ($component == $comp))
+                | { component: $component,
+                    directory: $path,
+                    version: $ver,
+                    repository: ($component + "-php") } ]')
 
-      - name: 🚀 Push subtree to rapira-rs/${{ steps.c.outputs.repository }}
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          echo "has=$(echo "${matrix}" | jq 'length > 0')" >> "$GITHUB_OUTPUT"
+          echo "${matrix}" | jq .
+
+  split:
+    name: ↪ ${{ matrix.repository }}
+    needs: plan
+    if: needs.plan.outputs.has == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - name: ⤵ Checkout monorepo (full history)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 🚀 Push subtree to rapira-rs/${{ matrix.repository }}
         uses: symplify/monorepo-split-github-action@v2.3.0
         with:
-          tag: ${{ steps.c.outputs.version }}
-          package_directory: ${{ steps.c.outputs.directory }}
+          tag: ${{ matrix.version }}
+          package_directory: ${{ matrix.directory }}
           repository_organization: rapira-rs
-          repository_name: ${{ steps.c.outputs.repository }}
-          branch: ${{ steps.branch.outputs.name }}
+          repository_name: ${{ matrix.repository }}
+          branch: ${{ github.ref_name }}
           user_name: 'github-actions[bot]'
           user_email: '41898282+github-actions[bot]@users.noreply.github.com'
         env:
