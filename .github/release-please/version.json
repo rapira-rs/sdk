@@ -1,5 +1,5 @@
 {
-    "packages/http": "0.1.1",
-    "packages/testing": "0.1.1",
+    "packages/http": "0.1.2",
+    "packages/testing": "0.1.2",
     "_": "0.0.0"
 }
